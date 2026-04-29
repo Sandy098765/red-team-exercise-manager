@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 
 export default function ExerciseList() {
+  const navigate = useNavigate()
   const [exercises, setExercises] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -63,7 +65,9 @@ export default function ExerciseList() {
         <h2 className="text-2xl font-bold text-blue-800">
           Red Team Exercises
         </h2>
-        <button className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700">
+        <button 
+          onClick={() => navigate('/create')}
+          className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700">
           + New Exercise
         </button>
       </div>
@@ -108,7 +112,9 @@ export default function ExerciseList() {
                   {new Date(exercise.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4">
-                  <button className="text-blue-600 hover:text-blue-800 mr-3">
+                  <button 
+                    onClick={() => navigate(`/edit/${exercise.id}`)}
+                    className="text-blue-600 hover:text-blue-800 mr-3">
                     Edit
                   </button>
                   <button className="text-red-600 hover:text-red-800">

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ExerciseList from './pages/ExerciseList'
+import ExerciseForm from './pages/ExerciseForm'
 
 function App() {
   return (
@@ -10,6 +11,8 @@ function App() {
         </nav>
         <Routes>
           <Route path="/" element={<ExerciseList />} />
+          <Route path="/create" element={<ExerciseForm />} />
+          <Route path="/edit/:id" element={<ExerciseForm />} />
         </Routes>
       </div>
     </BrowserRouter>
