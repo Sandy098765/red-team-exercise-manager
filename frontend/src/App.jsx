@@ -1,12 +1,18 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ExerciseList from './pages/ExerciseList'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-center text-blue-800 p-8">
-        Red Team Exercise Manager
-      </h1>
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-100">
+        <nav className="bg-blue-800 text-white p-4">
+          <h1 className="text-xl font-bold">Red Team Exercise Manager</h1>
+        </nav>
+        <Routes>
+          <Route path="/" element={<ExerciseList />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
 
