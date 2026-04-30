@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../services/api'
+import AiPanel from '../components/AiPanel'
 
 export default function ExerciseDetail() {
   const navigate = useNavigate()
@@ -18,8 +19,20 @@ export default function ExerciseDetail() {
       const response = await API.get(`/exercises/${id}`)
       setExercise(response.data)
     } catch (err) {
-      alert('Failed to load exercise')
-      navigate('/')
+      // Mock data for testing
+      setExercise({
+        id: id,
+        title: 'Network Penetration Test',
+        description: 'Testing internal network security vulnerabilities',
+        status: 'IN_PROGRESS',
+        severity: 'HIGH',
+        assignedTo: 'Sandhyarani',
+        createdAt: '2026-04-28T10:00:00',
+        startDate: '2026-05-01T00:00:00',
+        endDate: '2026-05-09T00:00:00',
+        aiDescription: null,
+        aiRecommendation: null
+      })
     } finally {
       setLoading(false)
     }
@@ -39,31 +52,21 @@ export default function ExerciseDetail() {
 
   const getScoreBadge = (severity) => {
     switch (severity) {
-      case 'CRITICAL':
-        return 'bg-red-100 text-red-800 border border-red-300'
-      case 'HIGH':
-        return 'bg-orange-100 text-orange-800 border border-orange-300'
-      case 'MEDIUM':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-      case 'LOW':
-        return 'bg-green-100 text-green-800 border border-green-300'
-      default:
-        return 'bg-gray-100 text-gray-800'
+      case 'CRITICAL': return 'bg-red-100 text-red-800 border border-red-300'
+      case 'HIGH': return 'bg-orange-100 text-orange-800 border border-orange-300'
+      case 'MEDIUM': return 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+      case 'LOW': return 'bg-green-100 text-green-800 border border-green-300'
+      default: return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800'
-      case 'IN_PROGRESS':
-        return 'bg-blue-100 text-blue-800'
-      case 'PLANNED':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
+      case 'COMPLETED': return 'bg-green-100 text-green-800'
+      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800'
+      case 'PLANNED': return 'bg-yellow-100 text-yellow-800'
+      case 'CANCELLED': return 'bg-red-100 text-red-800'
+      default: return 'bg-gray-100 text-gray-800'
     }
   }
 
@@ -95,11 +98,9 @@ export default function ExerciseDetail() {
         <div className="flex justify-between items-start mb-6">
           <h3 className="text-xl font-bold text-gray-800">{exercise.title}</h3>
           <div className="flex gap-2">
-            {/* Severity Score Badge */}
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreBadge(exercise.severity)}`}>
               {exercise.severity}
             </span>
-            {/* Status Badge */}
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusBadge(exercise.status)}`}>
               {exercise.status}
             </span>
@@ -120,9 +121,7 @@ export default function ExerciseDetail() {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Created At</p>
-            <p className="text-gray-700">
-              {new Date(exercise.createdAt).toLocaleDateString()}
-            </p>
+            <p className="text-gray-700">{new Date(exercise.createdAt).toLocaleDateString()}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Start Date</p>
@@ -137,22 +136,6 @@ export default function ExerciseDetail() {
             </p>
           </div>
         </div>
-
-        {/* AI Description */}
-        {exercise.aiDescription && (
-          <div className="mb-6 bg-blue-50 rounded-lg p-4">
-            <p className="text-sm font-medium text-blue-800 mb-1">🤖 AI Description</p>
-            <p className="text-gray-700">{exercise.aiDescription}</p>
-          </div>
-        )}
-
-        {/* AI Recommendation */}
-        {exercise.aiRecommendation && (
-          <div className="mb-6 bg-green-50 rounded-lg p-4">
-            <p className="text-sm font-medium text-green-800 mb-1">💡 AI Recommendation</p>
-            <p className="text-gray-700">{exercise.aiRecommendation}</p>
-          </div>
-        )}
 
         {/* Edit and Delete Buttons */}
         <div className="flex gap-4">
@@ -170,6 +153,12 @@ export default function ExerciseDetail() {
           </button>
         </div>
       </div>
+
+      {/* AI Panel */}
+      <AiPanel
+        exerciseId={id}
+        exerciseTitle={exercise.title}
+      />
     </div>
   )
 }
