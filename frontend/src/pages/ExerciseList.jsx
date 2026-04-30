@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 
@@ -8,8 +8,6 @@ export default function ExerciseList() {
   const [filtered, setFiltered] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  // Search and filter states
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -19,7 +17,6 @@ export default function ExerciseList() {
     fetchExercises()
   }, [])
 
-  // Debounced search effect
   useEffect(() => {
     const timer = setTimeout(() => {
       applyFilters()
@@ -34,7 +31,6 @@ export default function ExerciseList() {
       setExercises(response.data)
       setFiltered(response.data)
     } catch (err) {
-      // Use mock data when backend is not ready
       const mockData = [
         { id: 1, title: 'Network Penetration Test', description: 'Testing network security', status: 'IN_PROGRESS', severity: 'HIGH', assignedTo: 'Sandhyarani', createdAt: '2026-04-28T10:00:00' },
         { id: 2, title: 'Social Engineering Test', description: 'Testing social engineering vulnerabilities', status: 'PLANNED', severity: 'MEDIUM', assignedTo: 'Prajwal', createdAt: '2026-04-27T10:00:00' },
@@ -51,8 +47,6 @@ export default function ExerciseList() {
 
   const applyFilters = () => {
     let result = [...exercises]
-
-    // Search filter
     if (search.trim()) {
       result = result.filter(e =>
         e.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -60,24 +54,15 @@ export default function ExerciseList() {
         e.assignedTo?.toLowerCase().includes(search.toLowerCase())
       )
     }
-
-    // Status filter
     if (statusFilter) {
       result = result.filter(e => e.status === statusFilter)
     }
-
-    // Date range filter
     if (startDate) {
-      result = result.filter(e =>
-        new Date(e.createdAt) >= new Date(startDate)
-      )
+      result = result.filter(e => new Date(e.createdAt) >= new Date(startDate))
     }
     if (endDate) {
-      result = result.filter(e =>
-        new Date(e.createdAt) <= new Date(endDate)
-      )
+      result = result.filter(e => new Date(e.createdAt) <= new Date(endDate))
     }
-
     setFiltered(result)
   }
 
@@ -89,7 +74,28 @@ export default function ExerciseList() {
     setFiltered(exercises)
   }
 
-  // Loading state
+  const exportToCSV = () => {
+    const headers = ['ID', 'Title', 'Status', 'Severity', 'Assigned To', 'Created At']
+    const rows = filtered.map(e => [
+      e.id,
+      e.title,
+      e.status,
+      e.severity,
+      e.assignedTo || '-',
+      new Date(e.createdAt).toLocaleDateString()
+    ])
+    const csvContent = [headers, ...rows]
+      .map(row => row.join(','))
+      .join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'red-team-exercises.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -98,34 +104,6 @@ export default function ExerciseList() {
     )
   }
 
-  // Error state
-  // Error state - but still show search bar
-if (error) {
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-blue-800">Red Team Exercises</h2>
-        <button
-          onClick={() => navigate('/create')}
-          className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700"
-        >
-          + New Exercise
-        </button>
-      </div>
-      <div className="text-center p-8 text-red-500 bg-white rounded-lg shadow">
-        <p className="text-xl">⚠️ {error}</p>
-        <p className="text-gray-500 mt-2">Backend is not connected yet</p>
-        <button
-          onClick={fetchExercises}
-          className="mt-4 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700"
-        >
-          Try Again
-        </button>
-      </div>
-    </div>
-  )
-}
-
   return (
     <div className="p-6">
       {/* Header */}
@@ -133,22 +111,27 @@ if (error) {
         <h2 className="text-2xl font-bold text-blue-800">
           Red Team Exercises
         </h2>
-        <button
-          onClick={() => navigate('/create')}
-          className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700"
-        >
-          + New Exercise
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={exportToCSV}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            📥 Export CSV
+          </button>
+          <button
+            onClick={() => navigate('/create')}
+            className="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700"
+          >
+            + New Exercise
+          </button>
+        </div>
       </div>
 
       {/* Search and Filter Bar */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Search Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <input
               type="text"
               value={search}
@@ -157,12 +140,8 @@ if (error) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
-          {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -175,12 +154,8 @@ if (error) {
               <option value="CANCELLED">Cancelled</option>
             </select>
           </div>
-
-          {/* Start Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              From Date
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
             <input
               type="date"
               value={startDate}
@@ -188,12 +163,8 @@ if (error) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
-          {/* End Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              To Date
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
             <input
               type="date"
               value={endDate}
@@ -202,8 +173,6 @@ if (error) {
             />
           </div>
         </div>
-
-        {/* Clear Filters Button */}
         <div className="mt-3 flex justify-end">
           <button
             onClick={clearFilters}

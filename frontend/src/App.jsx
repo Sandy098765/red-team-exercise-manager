@@ -6,6 +6,7 @@ import ExerciseForm from './pages/ExerciseForm'
 import ExerciseDetail from './pages/ExerciseDetail'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import FileUpload from './pages/FileUpload'
 import { useAuth } from './context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,7 +15,7 @@ function Navbar() {
   const navigate = useNavigate()
   return (
     <nav className="bg-blue-800 text-white p-4 flex justify-between items-center">
-      <h1 
+      <h1
         className="text-xl font-bold cursor-pointer"
         onClick={() => navigate('/')}
       >
@@ -33,6 +34,12 @@ function Navbar() {
             className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
           >
             Exercises
+          </button>
+          <button
+            onClick={() => navigate('/upload')}
+            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+          >
+            Upload
           </button>
           <button
             onClick={logout}
@@ -77,6 +84,11 @@ function App() {
             <Route path="/detail/:id" element={
               <ProtectedRoute>
                 <ExerciseDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/upload" element={
+              <ProtectedRoute>
+                <FileUpload />
               </ProtectedRoute>
             } />
           </Routes>
