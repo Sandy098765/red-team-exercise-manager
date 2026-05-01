@@ -7,6 +7,7 @@ import ExerciseDetail from './pages/ExerciseDetail'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import FileUpload from './pages/FileUpload'
+import Analytics from './pages/Analytics'
 import { useAuth } from './context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -34,6 +35,12 @@ function Navbar() {
             className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
           >
             Exercises
+          </button>
+          <button
+            onClick={() => navigate('/analytics')}
+            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+          >
+            Analytics
           </button>
           <button
             onClick={() => navigate('/upload')}
@@ -69,6 +76,11 @@ function App() {
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Analytics />
               </ProtectedRoute>
             } />
             <Route path="/create" element={
