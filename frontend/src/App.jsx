@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -14,45 +15,98 @@ import { useNavigate } from 'react-router-dom'
 function Navbar() {
   const { token, logout } = useAuth()
   const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
-    <nav className="bg-blue-800 text-white p-4 flex justify-between items-center">
-      <h1
-        className="text-xl font-bold cursor-pointer"
-        onClick={() => navigate('/')}
-      >
-        Red Team Exercise Manager
-      </h1>
-      {token && (
-        <div className="flex gap-4">
+    <nav className="bg-blue-800 text-white p-4">
+      <div className="flex justify-between items-center">
+        {/* Logo */}
+        <h1
+          className="text-lg font-bold cursor-pointer"
+          onClick={() => { navigate('/'); setMenuOpen(false) }}
+        >
+          Red Team Manager
+        </h1>
+
+        {/* Hamburger Menu Button - shows on mobile */}
+        {token && (
           <button
-            onClick={() => navigate('/dashboard')}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden px-2 py-1 bg-blue-700 rounded"
           >
-            Dashboard
+            {menuOpen ? '✕' : '☰'}
+          </button>
+        )}
+
+        {/* Desktop Menu - hidden on mobile */}
+        {token && (
+          <div className="hidden md:flex gap-3">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm"
+            >
+              Exercises
+            </button>
+            <button
+              onClick={() => navigate('/analytics')}
+              className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm"
+            >
+              Analytics
+            </button>
+            <button
+              onClick={() => navigate('/upload')}
+              className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm"
+            >
+              Upload
+            </button>
+            <button
+              onClick={logout}
+              className="px-3 py-2 bg-white text-blue-800 rounded hover:bg-gray-100 text-sm font-medium"
+            >
+              Logout
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Menu - shows when hamburger clicked */}
+      {token && menuOpen && (
+        <div className="md:hidden mt-3 flex flex-col gap-2">
+          <button
+            onClick={() => { navigate('/dashboard'); setMenuOpen(false) }}
+            className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm text-left"
+          >
+            📊 Dashboard
           </button>
           <button
-            onClick={() => navigate('/')}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            onClick={() => { navigate('/'); setMenuOpen(false) }}
+            className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm text-left"
           >
-            Exercises
+            📋 Exercises
           </button>
           <button
-            onClick={() => navigate('/analytics')}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            onClick={() => { navigate('/analytics'); setMenuOpen(false) }}
+            className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm text-left"
           >
-            Analytics
+            📈 Analytics
           </button>
           <button
-            onClick={() => navigate('/upload')}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            onClick={() => { navigate('/upload'); setMenuOpen(false) }}
+            className="px-3 py-2 bg-blue-700 rounded hover:bg-blue-600 text-sm text-left"
           >
-            Upload
+            📤 Upload
           </button>
           <button
-            onClick={logout}
-            className="px-4 py-2 bg-white text-blue-800 rounded hover:bg-gray-100 font-medium"
+            onClick={() => { logout(); setMenuOpen(false) }}
+            className="px-3 py-2 bg-white text-blue-800 rounded hover:bg-gray-100 text-sm text-left font-medium"
           >
-            Logout
+            🚪 Logout
           </button>
         </div>
       )}
