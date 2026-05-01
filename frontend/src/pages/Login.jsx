@@ -46,11 +46,22 @@ export default function Login() {
 
     try {
       setLoading(true)
+      // Try real backend first
       const response = await API.post('/auth/login', formData)
       login(response.data.user, response.data.token)
       navigate('/')
     } catch (err) {
-      setApiError('Invalid email or password. Please try again.')
+      // Fallback fake login for demo
+      if (formData.email === 'admin@redteam.com' && 
+          formData.password === 'admin123') {
+        login(
+          { name: 'Admin', email: 'admin@redteam.com' }, 
+          'demo-token-123'
+        )
+        navigate('/')
+      } else {
+        setApiError('Invalid email or password. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -59,7 +70,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-blue-800">
@@ -123,6 +134,13 @@ export default function Login() {
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+
+          {/* Demo credentials hint */}
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg text-center">
+            <p className="text-sm text-blue-800 font-medium">Demo Credentials:</p>
+            <p className="text-sm text-gray-600">Email: admin@redteam.com</p>
+            <p className="text-sm text-gray-600">Password: admin123</p>
+          </div>
         </div>
       </div>
     </div>
